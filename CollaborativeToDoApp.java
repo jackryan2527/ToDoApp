@@ -16,25 +16,21 @@ public class CollaborativeToDoApp {
         } else {
             System.out.println("Failed to login. Exiting...");
         }
+        closeResources();
     }
 
     private static void runApp() {
         boolean running = true;
         while (running) {
             displayMenu();
-
             int choice = getUserChoice();
+
             switch (choice) {
-                case 1 -> taskManager.addTask();
-                case 2 -> taskManager.viewTasks();
-                case 3 -> collaborationManager.assignTask(userManager.getCurrentUser());
-                case 4 -> analytics.showReport();
-                case 5 -> {
-                    if (confirmLogout()) {
-                        running = false;
-                        System.out.println("Logging out... Goodbye!");
-                    }
-                }
+                case 1 -> addTask();
+                case 2 -> viewTasks();
+                case 3 -> assignTask();
+                case 4 -> viewAnalytics();
+                case 5 -> running = confirmLogout();
                 default -> System.out.println("Invalid choice. Please try again.");
             }
         }
@@ -65,9 +61,42 @@ public class CollaborativeToDoApp {
         }
     }
 
+    private static void addTask() {
+        taskManager.addTask();
+        System.out.println("Task added successfully.");
+    }
+
+    private static void viewTasks() {
+        taskManager.viewTasks();
+    }
+
+    private static void assignTask() {
+        collaborationManager.assignTask(userManager.getCurrentUser());
+        System.out.println("Task assigned successfully.");
+    }
+
+    private static void viewAnalytics() {
+        analytics.showReport();
+        System.out.println("Analytics displayed.");
+    }
+
     private static boolean confirmLogout() {
-        System.out.print("Are you sure you want to logout? (y/n): ");
-        String response = scanner.nextLine().trim().toLowerCase();
-        return response.equals("y");
+        while (true) {
+            System.out.print("Are you sure you want to logout? (y/n): ");
+            String response = scanner.nextLine().trim().toLowerCase();
+            if (response.equals("y")) {
+                System.out.println("Logging out... Goodbye!");
+                return false;  // Exit runApp loop
+            } else if (response.equals("n")) {
+                return true;  // Continue running the app
+            } else {
+                System.out.println("Invalid input. Please enter 'y' or 'n'.");
+            }
+        }
+    }
+
+    private static void closeResources() {
+        scanner.close();
+        System.out.println("Resources closed.");
     }
 }
